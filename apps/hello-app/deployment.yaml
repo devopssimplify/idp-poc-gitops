@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-app
-  namespace: pds-500
+  namespace: pds-501
   labels:
     app: hello-app
 spec:
