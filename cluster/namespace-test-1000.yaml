@@ -6,7 +6,7 @@ metadata:
     team: platform
     managed-by: backstage
   annotations:
-    description: 
+    description: ""
 ---
 apiVersion: v1
 kind: ResourceQuota
