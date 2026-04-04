@@ -122,7 +122,7 @@ metadata:
     team: platform
     managed-by: backstage
   annotations:
-    description: "test db"
+    description: "test"
 spec:
   serviceName: cockroachdb-test-1000-db-headless
   replicas: 1
