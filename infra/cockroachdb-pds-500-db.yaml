@@ -268,7 +268,7 @@ spec:
             echo "Single-node cluster auto-initializes, skipping init..."
 
             # Wait for cluster to be ready
-            sleep 10
+            sleep 20
 
             # Create default database
             echo "Creating database pds-500-db..."
