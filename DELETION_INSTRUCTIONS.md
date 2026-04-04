@@ -1,7 +1,7 @@
 # Infrastructure Deletion Instructions
 
 **Resource Type**: CockroachDB Database
-**Resource Name**: `pds-501-db`
+**Resource Name**: `pds-501d-db`
 **Environment**: `staging`
 **Deletion Reason**: 
 **Requested**: ${{ '' | now }}
@@ -16,13 +16,13 @@ Based on the resource type **CockroachDB Database**, you need to delete the foll
 
 ```bash
 # Delete these files from the repository:
-git rm infra/cockroachdb-pds-501-db.yaml
-git rm infra/cockroachdb-pds-501-db-backup.yaml
+git rm infra/cockroachdb-pds-501d-db.yaml
+git rm infra/cockroachdb-pds-501d-db-backup.yaml
 ```
 
 **Files to remove**:
-- `infra/cockroachdb-pds-501-db.yaml` - Main StatefulSet, Services, and Jobs
-- `infra/cockroachdb-pds-501-db-backup.yaml` - Backup configuration (if exists)
+- `infra/cockroachdb-pds-501d-db.yaml` - Main StatefulSet, Services, and Jobs
+- `infra/cockroachdb-pds-501d-db-backup.yaml` - Backup configuration (if exists)
 
 ---
 
@@ -32,7 +32,7 @@ git rm infra/cockroachdb-pds-501-db-backup.yaml
 
 ```bash
 git fetch origin
-git checkout delete-pds-501-db
+git checkout delete-pds-501d-db
 ```
 
 ### 2. Delete the Files
@@ -50,13 +50,13 @@ You should see the files marked for deletion.
 ### 4. Commit the Changes
 
 ```bash
-git commit -m "chore: Remove pds-501-db from staging"
+git commit -m "chore: Remove pds-501d-db from staging"
 ```
 
 ### 5. Push to Remote
 
 ```bash
-git push origin delete-pds-501-db
+git push origin delete-pds-501d-db
 ```
 
 ### 6. Merge the Pull Request
@@ -71,18 +71,18 @@ After the PR is merged and Config Sync has synced (wait ~1-2 minutes), verify th
 
 ```bash
 # Check StatefulSet is gone
-kubectl get statefulset cockroachdb-pds-501-db -n staging
+kubectl get statefulset cockroachdb-pds-501d-db -n staging
 
 # Check Services are gone
-kubectl get svc -n staging | grep cockroachdb-pds-501-db
+kubectl get svc -n staging | grep cockroachdb-pds-501d-db
 
 # Check PVCs (may need manual cleanup)
-kubectl get pvc -n staging | grep cockroachdb-pds-501-db
+kubectl get pvc -n staging | grep cockroachdb-pds-501d-db
 ```
 
 **Note**: Persistent Volume Claims (PVCs) may need to be manually deleted:
 ```bash
-kubectl delete pvc -n staging -l app=cockroachdb-pds-501-db
+kubectl delete pvc -n staging -l app=cockroachdb-pds-501d-db
 ```
 
 ---
