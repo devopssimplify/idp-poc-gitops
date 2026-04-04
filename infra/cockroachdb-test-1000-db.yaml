@@ -154,11 +154,11 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            cpu: "500m"
-            memory: "2Gi"
+            cpu: "100m"
+            memory: "512Mi"
           limits:
-            cpu: "2"
-            memory: "4Gi"
+            cpu: "200m"
+            memory: "1Gi"
         ports:
         - containerPort: 26257
           name: grpc
@@ -226,7 +226,7 @@ spec:
         - ReadWriteOnce
       resources:
         requests:
-          storage: "10Gi"
+          storage: "5Gi"
       storageClassName: standard-rwo
 ---
 apiVersion: batch/v1
