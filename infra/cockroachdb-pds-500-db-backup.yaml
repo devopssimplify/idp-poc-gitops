@@ -7,7 +7,7 @@ metadata:
   namespace: config-connector
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
     managed-by: backstage
   annotations:
     cnrm.cloud.google.com/project-id: project-7d27fad9-61bb-42c4-b2e
@@ -32,7 +32,7 @@ metadata:
   namespace: config-connector
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
     managed-by: backstage
   annotations:
     cnrm.cloud.google.com/project-id: project-7d27fad9-61bb-42c4-b2e
@@ -46,7 +46,7 @@ metadata:
   namespace: config-connector
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
 spec:
   member: serviceAccount:cockroachdb-pds-500-db-backup-sa@project-7d27fad9-61bb-42c4-b2e.iam.gserviceaccount.com
   role: roles/storage.objectAdmin
@@ -62,7 +62,7 @@ metadata:
   namespace: dev
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
   annotations:
     description: "GCS credentials for CockroachDB backups - Update this with actual SA key"
 type: Opaque
@@ -83,7 +83,7 @@ metadata:
   namespace: dev
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
     managed-by: backstage
   annotations:
     description: "Automated backup for CockroachDB pds-500-db"

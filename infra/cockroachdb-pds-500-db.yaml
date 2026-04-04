@@ -6,7 +6,7 @@ metadata:
   namespace: dev
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
     managed-by: backstage
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -16,7 +16,7 @@ metadata:
   namespace: dev
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
 rules:
 - apiGroups:
   - ""
@@ -33,7 +33,7 @@ metadata:
   namespace: dev
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -50,7 +50,7 @@ metadata:
   namespace: dev
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
     managed-by: backstage
   annotations:
     description: "CockroachDB public service for pds-500-db"
@@ -76,7 +76,7 @@ metadata:
   namespace: dev
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
     managed-by: backstage
   annotations:
     description: "CockroachDB headless service for internal communication"
@@ -105,7 +105,7 @@ metadata:
   namespace: dev
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
 spec:
   selector:
     matchLabels:
@@ -119,7 +119,7 @@ metadata:
   namespace: dev
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
     managed-by: backstage
   annotations:
     description: "pds-500-db"
@@ -133,7 +133,7 @@ spec:
     metadata:
       labels:
         app: cockroachdb-pds-500-db
-        team: platform
+        team: data
     spec:
       serviceAccountName: cockroachdb-pds-500-db
       affinity:
@@ -155,7 +155,7 @@ spec:
         resources:
           requests:
             cpu: "100m"
-            memory: "256Mi"
+            memory: "512Mi"
           limits:
             cpu: "500m"
             memory: "1Gi"
@@ -168,17 +168,20 @@ spec:
           httpGet:
             path: "/health"
             port: http
-            scheme: HTTPS
+            scheme: HTTP
           initialDelaySeconds: 30
-          periodSeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
         readinessProbe:
           httpGet:
             path: "/health?ready=1"
             port: http
-            scheme: HTTPS
+            scheme: HTTP
           initialDelaySeconds: 10
           periodSeconds: 5
-          failureThreshold: 2
+          timeoutSeconds: 3
+          failureThreshold: 3
         volumeMounts:
         - name: datadir
           mountPath: /cockroach/cockroach-data
@@ -220,7 +223,7 @@ spec:
       name: datadir
       labels:
         app: cockroachdb-pds-500-db
-        team: platform
+        team: data
     spec:
       accessModes:
         - ReadWriteOnce
@@ -236,7 +239,7 @@ metadata:
   namespace: dev
   labels:
     app: cockroachdb-pds-500-db
-    team: platform
+    team: data
     managed-by: backstage
   annotations:
     description: "Initialize CockroachDB cluster"
