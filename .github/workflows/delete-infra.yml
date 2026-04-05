@@ -99,7 +99,7 @@ jobs:
           ENVIRONMENT: ${{ inputs.environment }}
         run: |
           BRANCH_NAME="delete-${RESOURCE_NAME}-${ENVIRONMENT}"
-          git push origin "$BRANCH_NAME"
+          git push --force origin "$BRANCH_NAME"
 
       - name: Create Pull Request
         env:
@@ -131,8 +131,17 @@ jobs:
           WARNING: This action cannot be undone. All data will be permanently lost.
           This PR was created by the Backstage scaffolder via GitHub Actions.
           EOF
-          gh pr create \
-            --title "chore: Delete ${RESOURCE_TYPE} - ${RESOURCE_NAME}" \
-            --body-file pr_body.md \
-            --base main \
-            --head "$BRANCH_NAME"
+          # Check if PR already exists
+          EXISTING_PR=$(gh pr list --head "$BRANCH_NAME" --json number --jq '.[0].number' || echo "")
+
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #$EXISTING_PR already exists for branch $BRANCH_NAME, updating it..."
+            gh pr edit "$EXISTING_PR" --body-file pr_body.md
+          else
+            echo "Creating new PR for branch $BRANCH_NAME..."
+            gh pr create \
+              --title "chore: Delete ${RESOURCE_TYPE} - ${RESOURCE_NAME}" \
+              --body-file pr_body.md \
+              --base main \
+              --head "$BRANCH_NAME"
+          fi
