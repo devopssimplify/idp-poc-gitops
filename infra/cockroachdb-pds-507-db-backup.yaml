@@ -1,0 +1,134 @@
+
+---
+apiVersion: storage.cnrm.cloud.google.com/v1beta1
+kind: StorageBucket
+metadata:
+  name: cockroachdb-pds-507-db-backups
+  namespace: config-connector
+  labels:
+    app: cockroachdb-pds-507-db
+    team: data
+    managed-by: backstage
+  annotations:
+    cnrm.cloud.google.com/project-id: project-7d27fad9-61bb-42c4-b2e
+    description: "Backup bucket for CockroachDB pds-507-db"
+spec:
+  location: US
+  storageClass: STANDARD
+  uniformBucketLevelAccess: true
+  versioning:
+    enabled: true
+  lifecycleRule:
+    - action:
+        type: Delete
+      condition:
+        age: 30
+        withState: ANY
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMServiceAccount
+metadata:
+  name: cockroachdb-pds-507-db-backup-sa
+  namespace: config-connector
+  labels:
+    app: cockroachdb-pds-507-db
+    team: data
+    managed-by: backstage
+  annotations:
+    cnrm.cloud.google.com/project-id: project-7d27fad9-61bb-42c4-b2e
+spec:
+  displayName: "CockroachDB pds-507-db Backup Service Account"
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: cockroachdb-pds-507-db-backup-sa-storage
+  namespace: config-connector
+  labels:
+    app: cockroachdb-pds-507-db
+    team: data
+spec:
+  member: serviceAccount:cockroachdb-pds-507-db-backup-sa@project-7d27fad9-61bb-42c4-b2e.iam.gserviceaccount.com
+  role: roles/storage.objectAdmin
+  resourceRef:
+    apiVersion: storage.cnrm.cloud.google.com/v1beta1
+    kind: StorageBucket
+    name: cockroachdb-pds-507-db-backups
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cockroachdb-pds-507-db-backup-credentials
+  namespace: dev
+  labels:
+    app: cockroachdb-pds-507-db
+    team: data
+  annotations:
+    description: "GCS credentials for CockroachDB backups - Update this with actual SA key"
+type: Opaque
+stringData:
+  credentials.json: |
+    {
+      "type": "service_account",
+      "project_id": "project-7d27fad9-61bb-42c4-b2e",
+      "private_key_id": "REPLACE_WITH_ACTUAL_KEY_ID",
+      "private_key": "REPLACE_WITH_ACTUAL_PRIVATE_KEY",
+      "client_email": "cockroachdb-pds-507-db-backup-sa@project-7d27fad9-61bb-42c4-b2e.iam.gserviceaccount.com"
+    }
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cockroachdb-pds-507-db-backup
+  namespace: dev
+  labels:
+    app: cockroachdb-pds-507-db
+    team: data
+    managed-by: backstage
+  annotations:
+    description: "Automated backup for CockroachDB pds-507-db"
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: cockroachdb-pds-507-db-backup
+        spec:
+          serviceAccountName: cockroachdb-pds-507-db
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            image: cockroachdb/cockroach:v23.1.11
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /secrets/gcs/credentials.json
+            - name: BACKUP_TIMESTAMP
+              value: "$(date +%Y%m%d_%H%M%S)"
+            volumeMounts:
+            - name: gcs-credentials
+              mountPath: /secrets/gcs
+              readOnly: true
+            command:
+              - "/bin/bash"
+              - "-ecx"
+              - |
+                TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+                echo "Starting backup at $TIMESTAMP"
+
+                /cockroach/cockroach sql \
+                --insecure \
+                --host=cockroachdb-pds-507-db-0.cockroachdb-pds-507-db-headless.dev.svc.cluster.local:26257 \
+                --execute="BACKUP DATABASE pds-507-db TO 'gs://cockroachdb-pds-507-db-backups/backups/$TIMESTAMP?AUTH=specified&CREDENTIALS=/secrets/gcs/credentials.json' AS OF SYSTEM TIME '-10s' WITH revision_history;"
+
+                echo "Backup completed successfully to gs://cockroachdb-pds-507-db-backups/backups/$TIMESTAMP"
+          volumes:
+          - name: gcs-credentials
+            secret:
+              secretName: cockroachdb-pds-507-db-backup-credentials
