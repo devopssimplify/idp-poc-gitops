@@ -1,6 +1,30 @@
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: dev
+  labels:
+    environment: dev
+    managed-by: config-sync
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+  labels:
+    environment: staging
+    managed-by: config-sync
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: production
+  labels:
+    environment: production
+    managed-by: config-sync
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: apps
 ---
 apiVersion: v1
