@@ -13778,6 +13778,8 @@ spec:
           env:
             - name: STRIMZI_NAMESPACE
               value: "*"
+            - name: STRIMZI_KUBERNETES_VERSION
+              value: "major=1,minor=31"
             - name: STRIMZI_FULL_RECONCILIATION_INTERVAL_MS
               value: "120000"
             - name: STRIMZI_OPERATION_TIMEOUT_MS
