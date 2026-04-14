@@ -11,13 +11,5 @@ metadata:
 spec:
   connection:
     postgres:
-      host:
-        value: cockroachdb-pds-509-db.dev.svc.cluster.local
-      port:
-        value: "26257"
-      user:
-        value: root
-      dbname:
-        value: pds-509-db
-      sslmode:
-        value: disable
+      uri:
+        value: postgresql://root@cockroachdb-pds-509-db.dev.svc.cluster.local:26257/pds-509-db?sslmode=disable
