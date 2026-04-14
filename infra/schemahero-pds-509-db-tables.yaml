@@ -4,6 +4,8 @@ kind: Table
 metadata:
   name: pds-509-db-trackline
   namespace: dev
+  annotations:
+    configmanagement.gke.io/managed: disabled
   labels:
     app: cockroachdb-pds-509-db
     team: platform
