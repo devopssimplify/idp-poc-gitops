@@ -6,7 +6,7 @@ metadata:
   namespace: dev
   labels:
     app: cockroachdb-pds-509-db
-    team: data
+    team: platform
     managed-by: backstage
 spec:
   connection:
