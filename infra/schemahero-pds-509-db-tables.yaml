@@ -1,0 +1,35 @@
+
+---
+apiVersion: schemas.schemahero.io/v1alpha4
+kind: Table
+metadata:
+  name: pds-509-db-alertevent
+  namespace: dev
+  labels:
+    app: cockroachdb-pds-509-db
+    team: data
+    managed-by: backstage
+spec:
+  database: pds-509-db
+  name: alertevent
+  schema:
+    postgres:
+      primaryKey:
+        - id
+      columns:
+        - name: id
+          type: uuid
+          constraints:
+            notNull: true
+        - name: created_at
+          type: timestamp
+          constraints:
+            notNull: true
+        - name: updated_at
+          type: timestamp
+          constraints:
+            notNull: true
+        - name: test
+          type: varchar(255)
+        - name: test1
+          type: text
