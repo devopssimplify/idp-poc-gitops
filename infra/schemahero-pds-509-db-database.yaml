@@ -20,6 +20,6 @@ spec:
       password:
         value: ""
       dbname:
-        value: alertevent
+        value: pds-509-db
       sslmode:
         value: disable
