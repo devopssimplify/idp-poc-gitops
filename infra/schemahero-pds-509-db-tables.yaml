@@ -1,4 +1,3 @@
-
 ---
 apiVersion: schemas.schemahero.io/v1alpha4
 kind: Table
@@ -29,7 +28,5 @@ spec:
           type: timestamp
           constraints:
             notNull: true
-        - name: id
-          type: integer
         - name: station
           type: text
