@@ -31,5 +31,3 @@ spec:
             notNull: true
         - name: test
           type: text
-        - name: test1
-          type: text
