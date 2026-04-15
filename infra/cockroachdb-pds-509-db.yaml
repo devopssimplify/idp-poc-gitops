@@ -158,7 +158,7 @@ spec:
             memory: "256Mi"
           limits:
             cpu: "200m"
-            memory: "1Gi"
+            memory: "512Mi"
         ports:
         - containerPort: 26257
           name: grpc
