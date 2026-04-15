@@ -1,0 +1,32 @@
+---
+apiVersion: schemas.schemahero.io/v1alpha4
+kind: Table
+metadata:
+  name: pds-509-db-trackline
+  namespace: dev
+  labels:
+    app: cockroachdb-pds-509-db
+    team: platform
+    managed-by: backstage
+spec:
+  database: pds-509-db
+  name: trackline
+  schema:
+    postgres:
+      primaryKey:
+        - id
+      columns:
+        - name: id
+          type: uuid
+          constraints:
+            notNull: true
+        - name: created_at
+          type: timestamp
+          constraints:
+            notNull: true
+        - name: updated_at
+          type: timestamp
+          constraints:
+            notNull: true
+        - name: station
+          type: text
