@@ -1,0 +1,77 @@
+name: Update Network Code Label
+
+on:
+  workflow_dispatch:
+    inputs:
+      resourceType:
+        description: 'Resource type to tag'
+        required: true
+        type: choice
+        options:
+          - Namespace
+          - CockroachDB
+          - Kafka Cluster
+      resourceName:
+        description: 'Resource name (e.g. pds-503, pds-509-db, pds-kafka)'
+        required: true
+        type: string
+      networkCode:
+        description: 'Network code to assign (e.g. CN580004)'
+        required: true
+        type: string
+
+jobs:
+  update-network-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitOps repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install yq
+        run: |
+          wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          chmod +x /usr/local/bin/yq
+
+      - name: Update Namespace
+        if: ${{ inputs.resourceType == 'Namespace' }}
+        run: |
+          FILE="cluster/namespace-${{ inputs.resourceName }}.yaml"
+          if [ ! -f "$FILE" ]; then
+            echo "ERROR: $FILE not found in gitops repo"
+            exit 1
+          fi
+          yq -i '(select(.kind == "Namespace") | .metadata.labels."network-code") = "${{ inputs.networkCode }}"' "$FILE"
+          echo "Updated $FILE"
+
+      - name: Update CockroachDB
+        if: ${{ inputs.resourceType == 'CockroachDB' }}
+        run: |
+          FILE="infra/cockroachdb-${{ inputs.resourceName }}.yaml"
+          if [ ! -f "$FILE" ]; then
+            echo "ERROR: $FILE not found in gitops repo"
+            exit 1
+          fi
+          yq -i '.metadata.labels."network-code" = "${{ inputs.networkCode }}"'  "$FILE"
+          echo "Updated $FILE"
+
+      - name: Update Kafka Cluster
+        if: ${{ inputs.resourceType == 'Kafka Cluster' }}
+        run: |
+          FILE="infra/kafka-${{ inputs.resourceName }}-kafka.yaml"
+          if [ ! -f "$FILE" ]; then
+            echo "ERROR: $FILE not found in gitops repo"
+            exit 1
+          fi
+          yq -i '.metadata.labels."network-code" = "${{ inputs.networkCode }}"'  "$FILE"
+          echo "Updated $FILE"
+
+      - name: Commit and push
+        run: |
+          git config user.name "Backstage IDP"
+          git config user.email "idp@backstage.io"
+          git add -A
+          git diff --staged --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore: set network-code=${{ inputs.networkCode }} on ${{ inputs.resourceType }} ${{ inputs.resourceName }}"
+          git push
