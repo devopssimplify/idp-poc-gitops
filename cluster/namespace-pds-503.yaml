@@ -4,6 +4,7 @@ metadata:
   name: pds-503
   labels:
     team: platform
+    network-code: CN580004
     managed-by: backstage
   annotations:
     description: "test"
