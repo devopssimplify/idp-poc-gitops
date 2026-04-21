@@ -1,0 +1,47 @@
+
+apiVersion: storage.cnrm.cloud.google.com/v1beta1
+kind: StorageBucket
+metadata:
+  name: project-7d27fad9-61bb-42c4-b2e-pds-513-data
+  namespace: config-connector
+  annotations:
+    cnrm.cloud.google.com/project-id: project-7d27fad9-61bb-42c4-b2e
+spec:
+  location: US-CENTRAL1
+  storageClass: STANDARD
+  labels:
+    network-code: CN580004
+    team: platform
+    managed-by: backstage
+  uniformBucketLevelAccess: true
+  versioning:
+    enabled: false
+  lifecycleRule:
+    - action:
+        type: Delete
+      condition:
+        age: 90
+        withState: ANY
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMServiceAccount
+metadata:
+  name: pds-513-gcs-sa
+  namespace: config-connector
+  annotations:
+    cnrm.cloud.google.com/project-id: project-7d27fad9-61bb-42c4-b2e
+spec:
+  displayName: Service Account for pds-513 GCS access
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: pds-513-gcs-binding
+  namespace: config-connector
+spec:
+  member: serviceAccount:pds-513-gcs-sa@project-7d27fad9-61bb-42c4-b2e.iam.gserviceaccount.com
+  role: roles/storage.objectAdmin
+  resourceRef:
+    apiVersion: storage.cnrm.cloud.google.com/v1beta1
+    kind: StorageBucket
+    name: project-7d27fad9-61bb-42c4-b2e-pds-513-data

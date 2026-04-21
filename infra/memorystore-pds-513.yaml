@@ -1,0 +1,21 @@
+
+apiVersion: redis.cnrm.cloud.google.com/v1beta1
+kind: RedisInstance
+metadata:
+  name: pds-513-redis
+  namespace: config-connector
+  annotations:
+    cnrm.cloud.google.com/project-id: project-7d27fad9-61bb-42c4-b2e
+spec:
+  memorySizeGb: 1
+  region: us-central1
+  tier: BASIC
+  redisVersion: REDIS_7_0
+  labels:
+    network-code: CN580004
+    team: platform
+    managed-by: backstage
+  displayName: Redis for pds-513
+  authorizedNetworkRef:
+    name: default
+  connectMode: DIRECT_PEERING
