@@ -1,9 +1,12 @@
-
 apiVersion: sql.cnrm.cloud.google.com/v1beta1
 kind: SQLInstance
 metadata:
   name: pds-513-db
   namespace: config-connector
+  labels:
+    network-code: CN580004
+    team: platform
+    managed-by: backstage
   annotations:
     cnrm.cloud.google.com/project-id: project-7d27fad9-61bb-42c4-b2e
 spec:
@@ -11,10 +14,6 @@ spec:
   region: us-central1
   settings:
     tier: db-f1-micro
-    userLabels:
-      network-code: CN580004
-      team: platform
-      managed-by: backstage
     diskSize: 10
     diskType: PD_SSD
     backupConfiguration:

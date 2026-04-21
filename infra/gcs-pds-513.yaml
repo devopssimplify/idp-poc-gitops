@@ -1,18 +1,17 @@
-
 apiVersion: storage.cnrm.cloud.google.com/v1beta1
 kind: StorageBucket
 metadata:
   name: project-7d27fad9-61bb-42c4-b2e-pds-513-data
   namespace: config-connector
+  labels:
+    network-code: CN580004
+    team: platform
+    managed-by: backstage
   annotations:
     cnrm.cloud.google.com/project-id: project-7d27fad9-61bb-42c4-b2e
 spec:
   location: US-CENTRAL1
   storageClass: STANDARD
-  labels:
-    network-code: CN580004
-    team: platform
-    managed-by: backstage
   uniformBucketLevelAccess: true
   versioning:
     enabled: false
