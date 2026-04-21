@@ -4,7 +4,7 @@ metadata:
   name: project-7d27fad9-61bb-42c4-b2e-pds-513-data
   namespace: config-connector
   labels:
-    network-code: CN580004
+    network-code: cn580004
     team: platform
     managed-by: backstage
   annotations:

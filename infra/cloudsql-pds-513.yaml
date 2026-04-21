@@ -4,7 +4,7 @@ metadata:
   name: pds-513-db
   namespace: config-connector
   labels:
-    network-code: CN580004
+    network-code: cn580004
     team: platform
     managed-by: backstage
   annotations:
