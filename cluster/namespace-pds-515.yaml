@@ -3,8 +3,8 @@ kind: Namespace
 metadata:
   name: pds-515
   labels:
-    team: platform
-    network-code: CN580004
+    team: backend
+    network-code: cn580005
     managed-by: backstage
   annotations:
     description: "test"
