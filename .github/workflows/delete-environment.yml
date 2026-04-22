@@ -53,6 +53,16 @@ jobs:
             echo "Skipped (not found): $FILE"
           fi
 
+      - name: Delete application files
+        run: |
+          DIR="apps/${{ github.event.inputs.environment }}"
+          if [ -d "$DIR" ]; then
+            git rm -r "$DIR"
+            echo "Removed $DIR"
+          else
+            echo "Skipped (not found): $DIR"
+          fi
+
       - name: Delete Cloud SQL manifest
         if: ${{ github.event.inputs.delete_cloudsql == 'true' }}
         run: |
