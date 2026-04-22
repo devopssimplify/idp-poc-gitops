@@ -90,34 +90,34 @@ jobs:
           PR_TITLE="chore: Delete Kafka cluster ${NAME_PREFIX}-kafka from ${ENVIRONMENT}"
 
           cat > pr_body.md << EOF
-          ## Kafka Cluster Deletion Request
+## Kafka Cluster Deletion Request
 
-          **Cluster Name**: \`${NAME_PREFIX}-kafka\`
-          **Environment**: \`${ENVIRONMENT}\`
-          **Reason**: ${REASON}
+**Cluster Name**: \`${NAME_PREFIX}-kafka\`
+**Environment**: \`${ENVIRONMENT}\`
+**Reason**: ${REASON}
 
-          ---
+---
 
-          ## Files Being Deleted
+## Files Being Deleted
 
-          - \`infra/kafka-${NAME_PREFIX}-kafka.yaml\` — Strimzi Kafka CR (broker + zookeeper)
-          - \`infra/kafka-ui-${NAME_PREFIX}.yaml\` — Kafka UI pod
+- \`infra/kafka-${NAME_PREFIX}-kafka.yaml\` — Strimzi Kafka CR (broker + zookeeper)
+- \`infra/kafka-ui-${NAME_PREFIX}.yaml\` — Kafka UI pod
 
-          ## Next Steps
+## Next Steps
 
-          1. **Review this PR** — Verify the correct cluster is being deleted
-          2. **Merge this PR** — Config Sync will remove all cluster resources from the namespace
-          3. **Verify Deletion** — After merge, run:
-          \`\`\`bash
-          kubectl get kafka -n ${ENVIRONMENT}
-          kubectl get pod -n ${ENVIRONMENT} | grep ${NAME_PREFIX}
-          \`\`\`
+1. **Review this PR** — Verify the correct cluster is being deleted
+2. **Merge this PR** — Config Sync will remove all cluster resources from the namespace
+3. **Verify Deletion** — After merge, run:
+\`\`\`bash
+kubectl get kafka -n ${ENVIRONMENT}
+kubectl get pod -n ${ENVIRONMENT} | grep ${NAME_PREFIX}
+\`\`\`
 
-          > **WARNING**: This is irreversible. All Kafka data on this cluster will be permanently lost.
-          > Topics must be deleted separately using the Delete Kafka Topics template.
+> **WARNING**: This is irreversible. All Kafka data on this cluster will be permanently lost.
+> Topics must be deleted separately using the Delete Kafka Topics template.
 
-          _This PR was created by the Backstage scaffolder via GitHub Actions._
-          EOF
+_This PR was created by the Backstage scaffolder via GitHub Actions._
+EOF
 
           EXISTING_PR=$(gh pr list --head "$BRANCH_NAME" --json number --jq '.[0].number' || echo "")
           if [ -n "$EXISTING_PR" ]; then

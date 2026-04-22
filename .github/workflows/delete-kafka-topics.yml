@@ -87,31 +87,31 @@ jobs:
           PR_TITLE="chore: Delete Kafka topics for ${NAME_PREFIX}-kafka in ${ENVIRONMENT}"
 
           cat > pr_body.md << EOF
-          ## Kafka Topics Deletion Request
+## Kafka Topics Deletion Request
 
-          **Cluster**: \`${NAME_PREFIX}-kafka\`
-          **Environment**: \`${ENVIRONMENT}\`
-          **Reason**: ${REASON}
+**Cluster**: \`${NAME_PREFIX}-kafka\`
+**Environment**: \`${ENVIRONMENT}\`
+**Reason**: ${REASON}
 
-          ---
+---
 
-          ## Files Being Deleted
+## Files Being Deleted
 
-          - \`infra/kafka-topics-${NAME_PREFIX}.yaml\` — All KafkaTopic CRDs for this cluster
+- \`infra/kafka-topics-${NAME_PREFIX}.yaml\` — All KafkaTopic CRDs for this cluster
 
-          ## Next Steps
+## Next Steps
 
-          1. **Review this PR** — Verify the correct topics file is being deleted
-          2. **Merge this PR** — Config Sync will remove all KafkaTopic resources from the cluster
-          3. **Verify Deletion** — After merge, run:
-          \`\`\`bash
-          kubectl get kafkatopics -n ${ENVIRONMENT} | grep ${NAME_PREFIX}
-          \`\`\`
+1. **Review this PR** — Verify the correct topics file is being deleted
+2. **Merge this PR** — Config Sync will remove all KafkaTopic resources from the cluster
+3. **Verify Deletion** — After merge, run:
+\`\`\`bash
+kubectl get kafkatopics -n ${ENVIRONMENT} | grep ${NAME_PREFIX}
+\`\`\`
 
-          > **WARNING**: This is irreversible. All messages stored in these topics will be permanently lost.
+> **WARNING**: This is irreversible. All messages stored in these topics will be permanently lost.
 
-          _This PR was created by the Backstage scaffolder via GitHub Actions._
-          EOF
+_This PR was created by the Backstage scaffolder via GitHub Actions._
+EOF
 
           EXISTING_PR=$(gh pr list --head "$BRANCH_NAME" --json number --jq '.[0].number' || echo "")
           if [ -n "$EXISTING_PR" ]; then
