@@ -67,14 +67,18 @@ jobs:
           for f in "infra/kafka-${{ inputs.resourceName }}-kafka.yaml" "infra/kafka-ui-${{ inputs.resourceName }}.yaml"; do
             [ -f "$f" ] && git rm "$f" && FILES_DELETED=true && echo "Deleted: $f"
           done
+          for f in infra/kafka-topics-${{ inputs.resourceName }}-*.yaml infra/kafka-topics-${{ inputs.resourceName }}.yaml; do
+            [ -f "$f" ] && git rm "$f" && FILES_DELETED=true && echo "Deleted topic file: $f"
+          done
           echo "FILES_DELETED=$FILES_DELETED" >> $GITHUB_ENV
 
       - name: Delete Kafka Topics files
         if: inputs.resourceType == 'Kafka Topics'
         run: |
           FILES_DELETED=false
-          f="infra/kafka-topics-${{ inputs.resourceName }}.yaml"
-          [ -f "$f" ] && git rm "$f" && FILES_DELETED=true && echo "Deleted: $f"
+          for f in infra/kafka-topics-${{ inputs.resourceName }}-*.yaml infra/kafka-topics-${{ inputs.resourceName }}.yaml; do
+            [ -f "$f" ] && git rm "$f" && FILES_DELETED=true && echo "Deleted: $f"
+          done
           echo "FILES_DELETED=$FILES_DELETED" >> $GITHUB_ENV
 
       - name: Commit and push
