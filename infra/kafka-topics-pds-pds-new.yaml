@@ -3,7 +3,7 @@
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
-  name: pds-trackline
+  name: pds-bullentin-exception
   namespace: dev
   labels:
     strimzi.io/cluster: pds-kafka
