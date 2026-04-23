@@ -42,7 +42,7 @@ jobs:
           git config user.email "scaffolder@backstage.io"
 
       - name: Create branch
-        run: git checkout -b "delete-${{ inputs.resourceName }}-${{ inputs.environment }}"
+        run: git checkout -B "delete-${{ inputs.resourceName }}-${{ inputs.environment }}"
 
       - name: Delete CockroachDB files
         if: inputs.resourceType == 'CockroachDB Database'
