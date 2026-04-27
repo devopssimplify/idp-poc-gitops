@@ -1,0 +1,61 @@
+
+apiVersion: sql.cnrm.cloud.google.com/v1beta1
+kind: SQLInstance
+metadata:
+  name: pds-517-db
+  namespace: config-connector
+  labels:
+    network-code: cn580005
+    team: platform
+    managed-by: backstage
+  annotations:
+    cnrm.cloud.google.com/project-id: project-7d27fad9-61bb-42c4-b2e
+spec:
+  databaseVersion: POSTGRES_15
+  region: us-central1
+  settings:
+    tier: db-f1-micro
+    diskSize: 10
+    diskType: PD_SSD
+    backupConfiguration:
+      enabled: true
+      startTime: "03:00"
+    ipConfiguration:
+      ipv4Enabled: true
+      authorizedNetworks:
+        - name: allow-all
+          value: 0.0.0.0/0
+    locationPreference:
+      zone: us-central1-a
+---
+apiVersion: sql.cnrm.cloud.google.com/v1beta1
+kind: SQLDatabase
+metadata:
+  name: pds-517-maindb
+  namespace: config-connector
+spec:
+  instanceRef:
+    name: pds-517-db
+---
+apiVersion: sql.cnrm.cloud.google.com/v1beta1
+kind: SQLUser
+metadata:
+  name: pds-517-dbuser
+  namespace: config-connector
+spec:
+  instanceRef:
+    name: pds-517-db
+  password:
+    valueFrom:
+      secretKeyRef:
+        name: pds-517-db-secret
+        key: password
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pds-517-db-secret
+  namespace: config-connector
+type: Opaque
+stringData:
+  password: "changeme-generate-secure-password"
