@@ -24,9 +24,21 @@ spec:
         network-code: CN580004
         version: "v1.0"
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: cnds-ui
-        image: us-docker.pkg.dev/google-samples/containers/gke/hello-app:1.0
+        image: us-central1-docker.pkg.dev/project-0bf3e2ae-605b-4d46-9c2/backstage/hello-app:1.0
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop: [ALL]
         ports:
         - containerPort: 8080
           name: http
