@@ -1,0 +1,72 @@
+
+apiVersion: ibm.idp.io/v1alpha1
+kind: IBMDatabase
+metadata:
+  name: fm102-postgres
+  namespace: fm102
+  labels:
+    network-code: cn580005
+    team: platform
+    managed-by: backstage
+spec:
+  parameters:
+    dbName: fm102-postgres
+    dbType: postgresql
+    region: us-south
+    memoryMb: 8192
+    diskMb: 20480
+---
+apiVersion: ibm.idp.io/v1alpha1
+kind: IBMDatabase
+metadata:
+  name: fm102-redis
+  namespace: fm102
+  labels:
+    network-code: cn580005
+    team: platform
+    managed-by: backstage
+spec:
+  parameters:
+    dbName: fm102-redis
+    dbType: redis
+    region: us-south
+    memoryMb: 2048
+    diskMb: 10240
+---
+# IBM Cloud Object Storage — provisioned via IBM CLI Job
+# (No Crossplane composite available for COS yet)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fm102-provision-cos
+  namespace: idp
+  labels:
+    network-code: cn580005
+    team: platform
+    managed-by: backstage
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: ibm-cli
+        image: alpine:3.19
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -e
+            apk add --no-cache curl bash ca-certificates
+            curl -fsSL https://clis.cloud.ibm.com/install/linux | bash
+            ibmcloud login --apikey "${IBM_API_KEY}" -r us-south -q
+            ibmcloud target -g Default
+            ibmcloud resource service-instance-create fm102-cos \
+              cloud-object-storage standard global
+            echo "Done: fm102-cos"
+        env:
+        - name: IBM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: backstage-secrets
+              key: IBM_API_KEY
