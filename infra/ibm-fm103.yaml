@@ -1,0 +1,17 @@
+
+apiVersion: ibm.idp.io/v1alpha1
+kind: IBMDatabase
+metadata:
+  name: fm103-postgres
+  namespace: fm103
+  labels:
+    network-code: cn580005
+    team: platform
+    managed-by: backstage
+spec:
+  parameters:
+    dbName: fm103-postgres
+    dbType: postgresql
+    region: us-south
+    memoryMb: 8192
+    diskMb: 20480
