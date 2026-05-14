@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fm101-delete-ibm
+  namespace: idp
+  labels:
+    managed-by: backstage
+    action: delete
+    environment: fm101
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: ibm-cli
+        image: alpine:3.19
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -e
+            apk add --no-cache curl bash ca-certificates
+            curl -fsSL https://clis.cloud.ibm.com/install/linux | bash
+            ibmcloud login --apikey "${IBM_API_KEY}" -r us-south -q
+            ibmcloud target -g Default
+
+            delete_instance() {
+              echo "Deleting: $1"
+              ibmcloud resource service-instance-delete "$1" \
+                --force --recursive 2>/dev/null && \
+                echo "Deleted: $1" || \
+                echo "Not found or already deleted: $1"
+            }
+            echo "=== Deleting ALL infrastructure for fm101 ==="
+            delete_instance "fm101-postgres"
+            delete_instance "fm101-cos"
+            delete_instance "fm101-redis"
+            delete_instance "fm101-cos-cos"
+
+            echo "=== Done. IBM Cloud cleanup complete for: fm101 ==="
+        env:
+        - name: IBM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: backstage-secrets
+              key: IBM_API_KEY
