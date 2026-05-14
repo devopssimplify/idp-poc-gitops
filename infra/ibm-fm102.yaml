@@ -1,0 +1,112 @@
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fm102-provision-postgres
+  namespace: idp
+  labels:
+    network-code: cn580005
+    team: platform
+    managed-by: backstage
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: ibm-cli
+        image: alpine:3.19
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -e
+            apk add --no-cache curl bash ca-certificates
+            curl -fsSL https://clis.cloud.ibm.com/install/linux | bash
+            ibmcloud login --apikey "${IBM_API_KEY}" -r us-south -q
+            ibmcloud target -g Default
+            echo "Provisioning IBM Databases for PostgreSQL..."
+            ibmcloud resource service-instance-create fm102-postgres \
+              databases-for-postgresql standard us-south \
+              --service-endpoints public-and-private \
+              --parameters '{"version":"15","members_memory_allocation_mb":8192,"members_disk_allocation_mb":20480}'
+            echo "Done: fm102-postgres"
+        env:
+        - name: IBM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: backstage-secrets
+              key: IBM_API_KEY
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fm102-provision-cos
+  namespace: idp
+  labels:
+    network-code: cn580005
+    team: platform
+    managed-by: backstage
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: ibm-cli
+        image: alpine:3.19
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -e
+            apk add --no-cache curl bash ca-certificates
+            curl -fsSL https://clis.cloud.ibm.com/install/linux | bash
+            ibmcloud login --apikey "${IBM_API_KEY}" -r us-south -q
+            ibmcloud target -g Default
+            echo "Provisioning IBM Cloud Object Storage..."
+            ibmcloud resource service-instance-create fm102-cos \
+              cloud-object-storage standard global
+            echo "Done: fm102-cos"
+        env:
+        - name: IBM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: backstage-secrets
+              key: IBM_API_KEY
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fm102-provision-redis
+  namespace: idp
+  labels:
+    network-code: cn580005
+    team: platform
+    managed-by: backstage
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: ibm-cli
+        image: alpine:3.19
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -e
+            apk add --no-cache curl bash ca-certificates
+            curl -fsSL https://clis.cloud.ibm.com/install/linux | bash
+            ibmcloud login --apikey "${IBM_API_KEY}" -r us-south -q
+            ibmcloud target -g Default
+            echo "Provisioning IBM Databases for Redis..."
+            ibmcloud resource service-instance-create fm102-redis \
+              databases-for-redis standard us-south \
+              --service-endpoints public-and-private \
+              --parameters '{"members_memory_allocation_mb":2048,"members_disk_allocation_mb":10240}'
+            echo "Done: fm102-redis"
+        env:
+        - name: IBM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: backstage-secrets
+              key: IBM_API_KEY
