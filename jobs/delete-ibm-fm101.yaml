@@ -20,28 +20,61 @@ spec:
         args:
           - |
             set -e
-            apk add --no-cache curl bash ca-certificates
+            apk add --no-cache curl bash ca-certificates git
+
+            echo "=== Installing IBM Cloud CLI ==="
             curl -fsSL https://clis.cloud.ibm.com/install/linux | bash
+
+            echo "=== Logging in to IBM Cloud ==="
             ibmcloud login --apikey "${IBM_API_KEY}" -r us-south -q
             ibmcloud target -g Default
 
             delete_instance() {
-              echo "Deleting: $1"
+              echo "Deleting IBM Cloud service: $1"
               ibmcloud resource service-instance-delete "$1" \
                 --force --recursive 2>/dev/null && \
                 echo "Deleted: $1" || \
                 echo "Not found or already deleted: $1"
             }
-            echo "=== Deleting ALL infrastructure for fm101 ==="
-            delete_instance "fm101-postgres"
-            delete_instance "fm101-cos"
-            delete_instance "fm101-redis"
-            delete_instance "fm101-cos-cos"
 
-            echo "=== Done. IBM Cloud cleanup complete for: fm101 ==="
+            echo "=== Removing manifests from idp-poc-gitops ==="
+            git config --global user.email "backstage@devopssimplify.com"
+            git config --global user.name "Backstage Scaffolder"
+
+            git clone "https://${GITHUB_TOKEN}@github.com/devopssimplify/idp-poc-gitops.git" /tmp/gitops
+            cd /tmp/gitops
+
+            CHANGED=0
+            if [ -f "cluster/namespace-fm101.yaml" ]; then
+              git rm "cluster/namespace-fm101.yaml"
+              CHANGED=1
+            fi
+            if [ -f "infra/ibm-fm101.yaml" ]; then
+              git rm "infra/ibm-fm101.yaml"
+              CHANGED=1
+            fi
+            if [ -f "apps/fm101" ]; then
+              git rm -r "apps/fm101"
+              CHANGED=1
+            fi
+
+            if [ "$CHANGED" = "1" ]; then
+              git commit -m "chore: remove fm101 environment (deleted via Backstage)"
+              git push origin main
+              echo "Manifests removed from idp-poc-gitops — ArgoCD will prune the namespace"
+            else
+              echo "No manifests found in idp-poc-gitops for fm101"
+            fi
+
+            echo "=== Deletion complete for: fm101 ==="
         env:
         - name: IBM_API_KEY
           valueFrom:
             secretKeyRef:
               name: backstage-secrets
               key: IBM_API_KEY
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: backstage-secrets
+              key: GITHUB_TOKEN
