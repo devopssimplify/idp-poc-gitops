@@ -45,17 +45,33 @@ spec:
             cd /tmp/gitops
 
             CHANGED=0
+
+            # Remove namespace manifest
             if [ -f "cluster/namespace-fm101.yaml" ]; then
               git rm "cluster/namespace-fm101.yaml"
               CHANGED=1
+              echo "Removed cluster/namespace-fm101.yaml"
             fi
+
+            # Remove infra manifest
             if [ -f "infra/ibm-fm101.yaml" ]; then
               git rm "infra/ibm-fm101.yaml"
               CHANGED=1
+              echo "Removed infra/ibm-fm101.yaml"
             fi
-            if [ -f "apps/fm101" ]; then
-              git rm -r "apps/fm101"
+
+            # Remove all app deployments for this namespace (apps/<env>/*.yaml)
+            if [ -d "apps/fm101" ]; then
+              git rm -r "apps/fm101/"
               CHANGED=1
+              echo "Removed apps/fm101/ (all deployments)"
+            fi
+
+            # Remove any provisioning jobs for this env
+            if [ -d "jobs" ]; then
+              for f in jobs/*-fm101.yaml jobs/*-fm101-*.yaml; do
+                [ -f "$f" ] && git rm "$f" && echo "Removed $f" && CHANGED=1
+              done
             fi
 
             if [ "$CHANGED" = "1" ]; then
